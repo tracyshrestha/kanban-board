@@ -75,7 +75,7 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className={`font-medium text-card-foreground break-words `}>
+            <h4 className={`font-medium text-card-foreground wrap-break-words `}>
               {task.title}
             </h4>
             <p className="text-xs text-muted-foreground mt-1">

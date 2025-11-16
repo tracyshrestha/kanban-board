@@ -8,6 +8,7 @@ interface BoardState {
   addColumn: (title: string) => void;
   deleteColumn: (id: string) => void;
   updateColumn: (id: string, updates: Partial<Column>) => void;
+  reorderColumns: (newOrder: string[]) => void;
 }
 
 export const useBoardStore = create<BoardState>()(
@@ -40,10 +41,24 @@ export const useBoardStore = create<BoardState>()(
             col.id === id ? { ...col, ...updates } : col
           ),
         })),
+
+      reorderColumns: (newOrder: string[]) =>
+        set((state) => {
+          // Create a map for quick column lookup
+          const columnMap = new Map(state.columns.map(col => [col.id, col]));
+          
+          // Reorder columns based on the newOrder array
+          const reorderedColumns = newOrder
+            .map(id => columnMap.get(id))
+            .filter((col): col is Column => col !== undefined);
+          
+          return {
+            columns: reorderedColumns,
+          };
+        }),
     }),
     {
       name: 'board-storage',
     }
   )
 );
-

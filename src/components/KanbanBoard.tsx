@@ -1,4 +1,5 @@
 import { DndContext, type DragEndEvent, DragOverlay, type DragStartEvent, type DragOverEvent, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
+import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { useState } from 'react';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useBoardStore } from '@/store/useBoardStore';
@@ -10,9 +11,10 @@ import { Plus } from 'lucide-react';
 
 export const KanbanBoard = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeType, setActiveType] = useState<'task' | 'column' | null>(null);
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const { tasks, moveTask } = useTaskStore();
-  const { columns, addColumn } = useBoardStore();
+  const { columns, addColumn, reorderColumns } = useBoardStore();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -24,12 +26,16 @@ export const KanbanBoard = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
+    
+    // Determine if dragging a task or a column
+    const isColumn = columns.some(col => col.id === event.active.id);
+    setActiveType(isColumn ? 'column' : 'task');
   };
 
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
 
-    if (!over) return;
+    if (!over || activeType !== 'task') return;
 
     const activeId = active.id as string;
     const overId = over.id as string;
@@ -69,18 +75,37 @@ export const KanbanBoard = () => {
 
     if (!over) {
       setActiveId(null);
+      setActiveType(null);
       return;
     }
 
     const activeId = active.id as string;
     const overId = over.id as string;
 
+    // Handle column reordering
+    if (activeType === 'column') {
+      const columnIds = columns.map(col => col.id);
+      const oldIndex = columnIds.indexOf(activeId);
+      const newIndex = columnIds.indexOf(overId);
+      
+      if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+        const newColumnOrder = arrayMove(columnIds, oldIndex, newIndex);
+        reorderColumns(newColumnOrder);
+      }
+      
+      setActiveId(null);
+      setActiveType(null);
+      return;
+    }
+
+    // Handle task movement
     // Check if dropped over a column
     const overColumn = columns.find(col => col.id === overId);
     if (overColumn) {
       const tasksInColumn = tasks.filter(t => t.status === overColumn.id);
       moveTask(activeId, overColumn.id, tasksInColumn.length);
       setActiveId(null);
+      setActiveType(null);
       return;
     }
 
@@ -92,9 +117,13 @@ export const KanbanBoard = () => {
     }
 
     setActiveId(null);
+    setActiveType(null);
   };
 
-  const activeTask = activeId ? tasks.find(t => t.id === activeId) : null;
+  const activeTask = activeId && activeType === 'task' ? tasks.find(t => t.id === activeId) : null;
+  const activeColumn = activeId && activeType === 'column' ? columns.find(c => c.id === activeId) : null;
+
+  const columnIds = columns.map(col => col.id);
 
   const handleSaveBoard = (name: string) => {
     addColumn(name);
@@ -113,35 +142,41 @@ export const KanbanBoard = () => {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-6 overflow-x-auto pb-4">
-        {columns.map((column) => (
-          <div key={column.id} className="flex-shrink-0">
-            <KanbanColumn column={column} />
-          </div>
-        ))}
-        
-        {isAddingBoard ? (
-          <div className="flex-shrink-0">
-            <AddBoard onSave={handleSaveBoard} onCancel={handleCancelBoard} />
-          </div>
-        ) : (
-          <div className="flex-shrink-0">
-            <Button
-              onClick={() => setIsAddingBoard(true)}
-              variant="outline"
-              className="min-w-[280px] h-[400px] border-2 border-dashed border-muted-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2"
-            >
-              <Plus className="h-6 w-6" />
-              <span>Add another list</span>
-            </Button>
-          </div>
-        )}
-      </div>
+      <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
+        <div className="flex gap-6 overflow-x-auto pb-4">
+          {columns.map((column) => (
+            <div key={column.id} className="shrink-0">
+              <KanbanColumn column={column} />
+            </div>
+          ))}
+          
+          {isAddingBoard ? (
+            <div className="shrink-0">
+              <AddBoard onSave={handleSaveBoard} onCancel={handleCancelBoard} />
+            </div>
+          ) : (
+            <div className="shrink-0">
+              <Button
+                onClick={() => setIsAddingBoard(true)}
+                variant="outline"
+                className="min-w-[280px] h-[400px] border-2 border-dashed border-muted-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2"
+              >
+                <Plus className="h-6 w-6" />
+                <span>Add another list</span>
+              </Button>
+            </div>
+          )}
+        </div>
+      </SortableContext>
 
       <DragOverlay>
         {activeTask ? (
           <div className="rotate-3 opacity-80">
             <TaskCard task={activeTask} isDragging />
+          </div>
+        ) : activeColumn ? (
+          <div className="opacity-80">
+            <KanbanColumn column={activeColumn} />
           </div>
         ) : null}
       </DragOverlay>

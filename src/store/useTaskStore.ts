@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Task, TaskStatus } from '@/types/task';
+import  {type Task, type TaskStatus, COLUMNS } from '@/types/task';
 
 interface TaskState {
   tasks: Task[];
   filter: string;
   statusFilter: TaskStatus | 'all';
+  columnOrder: TaskStatus[];
   addTask: (title: string, status: TaskStatus) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
@@ -14,6 +15,7 @@ interface TaskState {
   setStatusFilter: (status: TaskStatus | 'all') => void;
   reorderTasks: (status: TaskStatus, taskIds: string[]) => void;
   toggleTaskComplete: (id: string) => void;
+  reorderColumns: (columnIds: TaskStatus[]) => void;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -22,6 +24,7 @@ export const useTaskStore = create<TaskState>()(
       tasks: [],
       filter: '',
       statusFilter: 'all',
+      columnOrder: COLUMNS.map(col => col.id),
 
       addTask: (title, status) =>
         set((state) => {
@@ -110,6 +113,8 @@ export const useTaskStore = create<TaskState>()(
             task.id === id ? { ...task, completed: !task.completed } : task
           ),
         })),
+        reorderColumns: (columnIds) =>
+        set({ columnOrder: columnIds }),
     }),
     {
       name: 'kanban-storage',

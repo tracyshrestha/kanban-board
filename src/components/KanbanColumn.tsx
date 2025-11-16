@@ -1,4 +1,6 @@
 import { useDroppable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { Column, TaskStatus } from '@/types/task';
 import { useTaskStore } from '@/store/useTaskStore';
@@ -21,6 +23,20 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
   const { setNodeRef, isOver } = useDroppable({
     id: column.id,
   });
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setSortableNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: column.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const columnTasks = tasks
     .filter((task) => task.status === column.id)
@@ -61,9 +77,11 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
 
   return (
     <motion.div
+     ref={setSortableNodeRef}
+      style={style}
       initial={{ opacity: 0, y: 20 }}
       animate={{ 
-        opacity: 1, 
+        opacity: isDragging ? 0.5 : 1, 
         y: 0,
         width: isCollapsed ? '80px' : 'auto'
       }}
@@ -72,7 +90,11 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
       {isCollapsed ? (
         // Collapsed vertical column view
         <>
-          <div className={`rounded-t-lg px-2 py-3 flex flex-col items-center gap-2 ${getHeaderColor(column.id, column.color)}`}>
+          <div 
+            {...attributes}
+            {...listeners}
+            className={`rounded-lg px-2 py-3 flex flex-col items-center gap-2 cursor-grab active:cursor-grabbing ${getHeaderColor(column.id)}`}
+          >
             <h3 className="font-semibold text-xs [writing-mode:vertical-rl]">{column.title}</h3>
             <span className="text-xs opacity-80 font-medium">
               {columnTasks.length}
@@ -87,20 +109,24 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
             </Button>
           </div>
 
-          <div
+          {/* <div
             ref={setNodeRef}
             className={`flex-1 rounded-b-lg border-2 border-t-0 transition-colors min-h-[400px] ${
               getColumnColor(column.id, column.color)
             } ${isOver ? 'ring-2 ring-primary' : ''}`}
           >
-            {/* No tasks shown when collapsed */}
-          </div>
+            No tasks shown when collapsed
+          </div> */}
         </>
       ) : (
         // Expanded horizontal column view
         <>
           <div className={`rounded-t-lg px-4 py-3 flex items-center justify-between ${getHeaderColor(column.id, column.color)}`}>
-            <div className="flex items-center gap-2">
+            <div 
+              {...attributes}
+              {...listeners}
+              className="flex items-center gap-2 cursor-grab active:cursor-grabbing flex-1"
+            >
               <h3 className="font-semibold text-sm">{column.title}</h3>
               <span className="text-xs opacity-80 font-medium">
                 {columnTasks.length}
