@@ -13,6 +13,7 @@ interface TaskState {
   setFilter: (filter: string) => void;
   setStatusFilter: (status: TaskStatus | 'all') => void;
   reorderTasks: (status: TaskStatus, taskIds: string[]) => void;
+  toggleTaskComplete: (id: string) => void;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -101,6 +102,13 @@ export const useTaskStore = create<TaskState>()(
             }
             return task;
           }),
+          })),
+
+      toggleTaskComplete: (id) =>
+        set((state) => ({
+          tasks: state.tasks.map((task) =>
+            task.id === id ? { ...task, completed: !task.completed } : task
+          ),
         })),
     }),
     {

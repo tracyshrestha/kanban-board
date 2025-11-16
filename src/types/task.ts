@@ -1,4 +1,4 @@
-export type TaskStatus = 'todo' | 'in-progress' | 'done';
+export type TaskStatus = 'todo' | 'in-progress' | 'done' | string;
 
 export interface Task {
   id: string;
@@ -6,10 +6,11 @@ export interface Task {
   status: TaskStatus;
   createdAt: string;
   order: number;
+  completed?: boolean;
 }
 
 export interface Column {
-  id: TaskStatus;
+  id: string;
   title: string;
   color: string;
 }
