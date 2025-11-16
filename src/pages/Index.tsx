@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { KanbanBoard } from '@/components/KanbanBoard';
 import { FilterBar } from '@/components/FilterBar';
 import { AddTaskDialog } from '@/components/AddTaskDialog';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Plus, LayoutDashboard, LogOut } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -42,6 +43,7 @@ const Index = () => {
             </div>
 
             <div className="flex gap-2">
+              <ThemeToggle />
               <Button onClick={() => setIsAddDialogOpen(true)}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task

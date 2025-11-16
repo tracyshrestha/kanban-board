@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useState } from 'react';
 import { EditTaskDialog } from './EditTaskDialog';
+import { Checkbox } from './ui/checkbox';
 
 interface TaskCardProps {
   task: Task;
@@ -15,7 +16,7 @@ interface TaskCardProps {
 
 export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const { deleteTask } = useTaskStore();
+  const { deleteTask, toggleTaskComplete } = useTaskStore();
 
   const {
     attributes,
@@ -58,6 +59,13 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
         }`}
       >
         <div className="flex items-start gap-2">
+           <div className={`transition-opacity ${task.completed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+            <Checkbox
+              checked={task.completed || false}
+              onCheckedChange={() => toggleTaskComplete(task.id)}
+              className="mt-0.5 rounded-full"
+            />
+          </div>
           <div
             {...attributes}
             {...listeners}
@@ -67,7 +75,7 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className="font-medium text-card-foreground wrap-break-words">
+            <h4 className={`font-medium text-card-foreground break-words `}>
               {task.title}
             </h4>
             <p className="text-xs text-muted-foreground mt-1">

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import type { TaskStatus } from '@/types/task';
 import { useTaskStore } from '@/store/useTaskStore';
-import { COLUMNS } from '@/types/task';
+import { useBoardStore } from '@/store/useBoardStore';
 
 interface AddTaskDialogProps {
   isOpen: boolean;
@@ -30,6 +30,7 @@ export const AddTaskDialog = ({ isOpen, onClose, defaultStatus = 'todo' }: AddTa
   const [title, setTitle] = useState('');
   const [status, setStatus] = useState<TaskStatus>(defaultStatus);
   const { addTask } = useTaskStore();
+  const { columns } = useBoardStore();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +71,7 @@ export const AddTaskDialog = ({ isOpen, onClose, defaultStatus = 'todo' }: AddTa
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {COLUMNS.map((column) => (
+                {columns.map((column) => (
                   <SelectItem key={column.id} value={column.id}>
                     {column.title}
                   </SelectItem>

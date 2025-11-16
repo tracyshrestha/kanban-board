@@ -1,6 +1,7 @@
 import { Search } from 'lucide-react';
 import { Input } from './ui/input';
 import { useTaskStore } from '@/store/useTaskStore';
+import { useBoardStore } from '@/store/useBoardStore';
 import {
   Select,
   SelectContent,
@@ -8,10 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { COLUMNS } from '@/types/task';
 
 export const FilterBar = () => {
   const { filter, statusFilter, setFilter, setStatusFilter } = useTaskStore();
+  const { columns } = useBoardStore();
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -34,7 +35,7 @@ export const FilterBar = () => {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Status</SelectItem>
-          {COLUMNS.map((column) => (
+          {columns.map((column) => (
             <SelectItem key={column.id} value={column.id}>
               {column.title}
             </SelectItem>

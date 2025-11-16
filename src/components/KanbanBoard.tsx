@@ -1,13 +1,18 @@
 import { DndContext, type DragEndEvent, DragOverlay, type DragStartEvent, type DragOverEvent, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
 import { useState } from 'react';
 import { useTaskStore } from '@/store/useTaskStore';
+import { useBoardStore } from '@/store/useBoardStore';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskCard } from './TaskCard';
-import { COLUMNS } from '@/types/task';
+import { AddBoard } from './AddBoard';
+import { Button } from './ui/button';
+import { Plus } from 'lucide-react';
 
 export const KanbanBoard = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [isAddingBoard, setIsAddingBoard] = useState(false);
   const { tasks, moveTask } = useTaskStore();
+  const { columns, addColumn } = useBoardStore();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -71,7 +76,7 @@ export const KanbanBoard = () => {
     const overId = over.id as string;
 
     // Check if dropped over a column
-    const overColumn = COLUMNS.find(col => col.id === overId);
+    const overColumn = columns.find(col => col.id === overId);
     if (overColumn) {
       const tasksInColumn = tasks.filter(t => t.status === overColumn.id);
       moveTask(activeId, overColumn.id, tasksInColumn.length);
@@ -91,6 +96,15 @@ export const KanbanBoard = () => {
 
   const activeTask = activeId ? tasks.find(t => t.id === activeId) : null;
 
+  const handleSaveBoard = (name: string) => {
+    addColumn(name);
+    setIsAddingBoard(false);
+  };
+
+  const handleCancelBoard = () => {
+    setIsAddingBoard(false);
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -99,10 +113,29 @@ export const KanbanBoard = () => {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {COLUMNS.map((column) => (
-          <KanbanColumn key={column.id} column={column} />
+      <div className="flex gap-6 overflow-x-auto pb-4">
+        {columns.map((column) => (
+          <div key={column.id} className="flex-shrink-0">
+            <KanbanColumn column={column} />
+          </div>
         ))}
+        
+        {isAddingBoard ? (
+          <div className="flex-shrink-0">
+            <AddBoard onSave={handleSaveBoard} onCancel={handleCancelBoard} />
+          </div>
+        ) : (
+          <div className="flex-shrink-0">
+            <Button
+              onClick={() => setIsAddingBoard(true)}
+              variant="outline"
+              className="min-w-[280px] h-[400px] border-2 border-dashed border-muted-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2"
+            >
+              <Plus className="h-6 w-6" />
+              <span>Add another list</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       <DragOverlay>
