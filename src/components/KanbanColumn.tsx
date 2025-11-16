@@ -87,7 +87,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
         y: 0,
         width: isCollapsed ? '80px' : 'auto'
       }}
-      className="flex flex-col"
+      className="flex flex-col w-full max-w-[300px]"
     >
       {isCollapsed ? (
         // Collapsed vertical column view
@@ -123,7 +123,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
       ) : (
         // Expanded horizontal column view
         <>
-          <div className={`rounded-t-lg px-4 py-3 min-w-64 flex items-center justify-between ${getHeaderColor(column.id, column.color)}`}>
+          <div className={`rounded-t-lg px-4 py-3 min-w-[300px] flex items-center justify-between ${getHeaderColor(column.id, column.color)}`}>
             <div 
               {...attributes}
               {...listeners}

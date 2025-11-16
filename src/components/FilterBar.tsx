@@ -15,14 +15,14 @@ export const FilterBar = () => {
   const { columns } = useBoardStore();
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 mb-6">
+    <div className="flex flex-col sm:flex-row gap-3">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search tasks..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="pl-9"
+          className="pl-9 bg-background/50 backdrop-blur-sm"
         />
       </div>
 
@@ -30,7 +30,7 @@ export const FilterBar = () => {
         value={statusFilter}
         onValueChange={(value) => setStatusFilter(value as any)}
       >
-        <SelectTrigger className="w-full sm:w-[180px]">
+        <SelectTrigger className="w-full sm:w-[180px] bg-background/50 backdrop-blur-sm">
           <SelectValue placeholder="Filter by status" />
         </SelectTrigger>
         <SelectContent>

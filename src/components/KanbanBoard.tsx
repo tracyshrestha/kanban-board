@@ -18,8 +18,20 @@ export const KanbanBoard = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number>(0);
   const scrollStartX = useRef<number>(0);
-  const { tasks, moveTask } = useTaskStore();
+  const { tasks, moveTask, filter, statusFilter } = useTaskStore();
   const { columns, addColumn, reorderColumns } = useBoardStore();
+  
+  // Filter columns to only show those that contain matching tasks
+  const filteredColumns = columns.filter((column) => {
+    const columnTasks = tasks.filter((task) => task.status === column.id);
+    const matchingTasks = columnTasks.filter((task) => {
+      const matchesText = filter === '' || task.title.toLowerCase().includes(filter.toLowerCase());
+      const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
+      return matchesText && matchesStatus;
+    });
+    // Show column if it has matching tasks, or if no filter is applied
+    return matchingTasks.length > 0 || (filter === '' && statusFilter === 'all');
+  });
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -33,7 +45,7 @@ export const KanbanBoard = () => {
     setActiveId(event.active.id as string);
     
     // Determine if dragging a task or a column
-    const isColumn = columns.some(col => col.id === event.active.id);
+    const isColumn = filteredColumns.some(col => col.id === event.active.id);
     setActiveType(isColumn ? 'column' : 'task');
     setIsDraggingBackground(false);
     setIsHoveringScrollableArea(false); // Reset hover state when dragging starts
@@ -180,7 +192,7 @@ export const KanbanBoard = () => {
 
     // Handle column reordering
     if (activeType === 'column') {
-      const columnIds = columns.map(col => col.id);
+      const columnIds = filteredColumns.map(col => col.id);
       const oldIndex = columnIds.indexOf(activeId);
       const newIndex = columnIds.indexOf(overId);
       
@@ -195,8 +207,8 @@ export const KanbanBoard = () => {
     }
 
     // Handle task movement
-    // Check if dropped over a column
-    const overColumn = columns.find(col => col.id === overId);
+    // Check if dropped over a column (only visible/filtered columns can be drop targets)
+    const overColumn = filteredColumns.find(col => col.id === overId);
     if (overColumn) {
       const tasksInColumn = tasks.filter(t => t.status === overColumn.id);
       moveTask(activeId, overColumn.id, tasksInColumn.length);
@@ -217,9 +229,9 @@ export const KanbanBoard = () => {
   };
 
   const activeTask = activeId && activeType === 'task' ? tasks.find(t => t.id === activeId) : null;
-  const activeColumn = activeId && activeType === 'column' ? columns.find(c => c.id === activeId) : null;
+  const activeColumn = activeId && activeType === 'column' ? filteredColumns.find(c => c.id === activeId) : null;
 
-  const columnIds = columns.map(col => col.id);
+  const columnIds = filteredColumns.map(col => col.id);
 
   const handleSaveBoard = (name: string) => {
     addColumn(name);
@@ -254,7 +266,7 @@ export const KanbanBoard = () => {
           onMouseLeave={handleBackgroundMouseLeave}
           style={{ userSelect: isDraggingBackground ? 'none' : 'auto' }}
         >
-          {columns.map((column) => (
+          {filteredColumns.map((column) => (
             <div key={column.id} className="shrink-0" data-draggable="true">
               <KanbanColumn column={column} />
             </div>
