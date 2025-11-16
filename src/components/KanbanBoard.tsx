@@ -1,6 +1,6 @@
 import { DndContext, type DragEndEvent, DragOverlay, type DragStartEvent, type DragOverEvent, PointerSensor, useSensor, useSensors, closestCenter } from '@dnd-kit/core';
 import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useBoardStore } from '@/store/useBoardStore';
 import { KanbanColumn } from './KanbanColumn';
@@ -13,6 +13,11 @@ export const KanbanBoard = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<'task' | 'column' | null>(null);
   const [isAddingBoard, setIsAddingBoard] = useState(false);
+  const [isDraggingBackground, setIsDraggingBackground] = useState(false);
+  const [isHoveringScrollableArea, setIsHoveringScrollableArea] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const dragStartX = useRef<number>(0);
+  const scrollStartX = useRef<number>(0);
   const { tasks, moveTask } = useTaskStore();
   const { columns, addColumn, reorderColumns } = useBoardStore();
 
@@ -30,7 +35,98 @@ export const KanbanBoard = () => {
     // Determine if dragging a task or a column
     const isColumn = columns.some(col => col.id === event.active.id);
     setActiveType(isColumn ? 'column' : 'task');
+    setIsDraggingBackground(false);
+    setIsHoveringScrollableArea(false); // Reset hover state when dragging starts
   };
+
+  // Check if an element is scrollable empty space
+  const isScrollableEmptySpace = (target: HTMLElement): boolean => {
+    // Don't interfere if dnd-kit is handling a drag
+    if (activeId) return false;
+    
+    // Check if clicking directly on interactive elements (buttons, inputs, etc.)
+    const isDirectlyOnInteractive = 
+      target.tagName === 'BUTTON' ||
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.tagName === 'SELECT' ||
+      target.getAttribute('role') === 'button';
+    
+    // Check if clicking on task cards (we don't want to scroll when clicking on tasks)
+    const isOnTaskCard = target.closest('.bg-card') !== null;
+    
+    // Check if clicking on column header (we don't want to scroll when clicking on headers)
+    const isOnColumnHeader = target.closest('[class*="rounded-t-lg"]') !== null;
+    
+    // Check if clicking on the column body area (the droppable area with rounded-b-lg)
+    const columnBody = target.closest('[class*="rounded-b-lg"]');
+    const isOnColumnBody = columnBody !== null;
+    
+    // If clicking on column body, check if it's empty space (not on a task or button)
+    const isEmptySpaceInColumnBody = isOnColumnBody && !isOnTaskCard && !isDirectlyOnInteractive;
+    
+    // Return true if it's scrollable empty space
+    return ((!isDirectlyOnInteractive && !isOnTaskCard && !isOnColumnHeader) || isEmptySpaceInColumnBody);
+  };
+
+  // Handle background drag for horizontal scrolling
+  const handleBackgroundMouseDown = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    
+    if (isScrollableEmptySpace(target)) {
+      setIsDraggingBackground(true);
+      dragStartX.current = e.clientX;
+      if (scrollContainerRef.current) {
+        scrollStartX.current = scrollContainerRef.current.scrollLeft;
+      }
+      e.preventDefault();
+    }
+  };
+
+  // Handle mouse move to detect scrollable areas
+  const handleBackgroundMouseMove = (e: React.MouseEvent) => {
+    if (isDraggingBackground && scrollContainerRef.current) {
+      const deltaX = dragStartX.current - e.clientX;
+      scrollContainerRef.current.scrollLeft = scrollStartX.current + deltaX;
+    } else if (!activeId) {
+      // Check if hovering over scrollable empty space
+      const target = e.target as HTMLElement;
+      setIsHoveringScrollableArea(isScrollableEmptySpace(target));
+    }
+  };
+
+  const handleBackgroundMouseUp = () => {
+    setIsDraggingBackground(false);
+  };
+
+  const handleBackgroundMouseLeave = () => {
+    setIsDraggingBackground(false);
+    setIsHoveringScrollableArea(false);
+  };
+
+  // Handle global mouse events for background dragging
+  useEffect(() => {
+    if (isDraggingBackground) {
+      const handleMouseMove = (e: MouseEvent) => {
+        if (scrollContainerRef.current) {
+          const deltaX = dragStartX.current - e.clientX;
+          scrollContainerRef.current.scrollLeft = scrollStartX.current + deltaX;
+        }
+      };
+
+      const handleMouseUp = () => {
+        setIsDraggingBackground(false);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDraggingBackground]);
 
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
@@ -143,9 +239,23 @@ export const KanbanBoard = () => {
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
-        <div className="flex gap-6 overflow-x-auto pb-4">
+        <div
+          ref={scrollContainerRef}
+          className={`flex gap-6 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
+            isDraggingBackground 
+              ? 'cursor-grabbing' 
+              : isHoveringScrollableArea 
+                ? 'cursor-grab' 
+                : ''
+          }`}
+          onMouseDown={handleBackgroundMouseDown}
+          onMouseMove={handleBackgroundMouseMove}
+          onMouseUp={handleBackgroundMouseUp}
+          onMouseLeave={handleBackgroundMouseLeave}
+          style={{ userSelect: isDraggingBackground ? 'none' : 'auto' }}
+        >
           {columns.map((column) => (
-            <div key={column.id} className="shrink-0">
+            <div key={column.id} className="shrink-0" data-draggable="true">
               <KanbanColumn column={column} />
             </div>
           ))}
@@ -159,7 +269,7 @@ export const KanbanBoard = () => {
               <Button
                 onClick={() => setIsAddingBoard(true)}
                 variant="outline"
-                className="min-w-[280px] h-[400px] border-2 border-dashed border-muted-foreground/30 bg-muted/30 hover:bg-muted/50 flex flex-col items-center justify-center gap-2"
+                className="min-w-[280px] h-10 border-2 border-muted-foreground/30 bg-muted/30 hover:bg-muted/50 flex items-center justify-center gap-2"
               >
                 <Plus className="h-6 w-6" />
                 <span>Add another list</span>

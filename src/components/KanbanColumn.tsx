@@ -6,10 +6,12 @@ import type { Column, TaskStatus } from '@/types/task';
 import { useTaskStore } from '@/store/useTaskStore';
 import { TaskCard } from './TaskCard';
 import { motion } from 'framer-motion';
-import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useState } from 'react';
 import { AddTaskDialog } from './AddTaskDialog';
+import { BsArrowsAngleExpand } from "react-icons/bs";
+import { BsArrowsAngleContract } from "react-icons/bs";
 
 interface KanbanColumnProps {
   column: Column;
@@ -96,7 +98,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
             className={`rounded-lg px-2 py-3 flex flex-col items-center gap-2 cursor-grab active:cursor-grabbing ${getHeaderColor(column.id)}`}
           >
             <h3 className="font-semibold text-xs [writing-mode:vertical-rl]">{column.title}</h3>
-            <span className="text-xs opacity-80 font-medium">
+            <span className="text-xs opacity-80 font-medium [writing-mode:vertical-rl]">
               {columnTasks.length}
             </span>
             <Button
@@ -105,7 +107,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
               className="h-6 w-6 hover:bg-white/20"
               onClick={() => setIsCollapsed(false)}
             >
-              <ChevronRight className="h-3 w-3" />
+              <BsArrowsAngleExpand className="h-0.5 w-0.5 [writing-mode:vertical-rl]" />
             </Button>
           </div>
 
@@ -121,7 +123,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
       ) : (
         // Expanded horizontal column view
         <>
-          <div className={`rounded-t-lg px-4 py-3 flex items-center justify-between ${getHeaderColor(column.id, column.color)}`}>
+          <div className={`rounded-t-lg px-4 py-3 min-w-64 flex items-center justify-between ${getHeaderColor(column.id, column.color)}`}>
             <div 
               {...attributes}
               {...listeners}
@@ -139,7 +141,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
                 className="h-6 w-6 hover:bg-white/20"
                 onClick={() => setIsCollapsed(true)}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <BsArrowsAngleContract className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
@@ -154,7 +156,7 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
 
           <div
             ref={setNodeRef}
-            className={`flex-1 rounded-b-lg border-2 border-t-0 transition-colors min-h-[400px] p-4 ${
+            className={`flex-1 rounded-b-lg border-2 border-t-0 transition-colors min-h-10  p-4 ${
               getColumnColor(column.id, column.color)
             } ${isOver ? 'ring-2 ring-primary' : ''}`}
           >
@@ -168,7 +170,13 @@ export const KanbanColumn = ({ column }: KanbanColumnProps) => {
 
             {columnTasks.length === 0 && (
               <div className="flex items-center justify-center h-32 text-muted-foreground text-sm">
-                Drop tasks here
+                
+                <Button
+                
+                onClick={() => setIsAddDialogOpen(true)}
+              >
+                <Plus className="h-4 w-4" />Add a card
+              </Button>
               </div>
             )}
           </div>
