@@ -1,38 +1,31 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { KanbanBoard } from '@/components/KanbanBoard';
-import { FilterBar } from '@/components/FilterBar';
-import { AddTaskDialog } from '@/components/AddTaskDialog';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { Button } from '@/components/ui/button';
-import { LayoutDashboard, LogOut } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useAuthStore } from '@/store/useAuthStore';
-import backgroundImage from '@/assets/kanban.jpg';
+import { useState } from "react";
+import { KanbanBoard } from "@/components/KanbanBoard";
+import { FilterBar } from "@/components/FilterBar";
+import { AddTaskDialog } from "@/components/AddTaskDialog";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { UserMenu } from "@/components/UserMenu";
+import { LayoutDashboard } from 'lucide-react';
+import { motion } from "framer-motion";
+import { useAuthStore } from "@/store/useAuthStore";
+import backgroundImage from "@/assets/kanban.jpg";
 
 const Index = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const { user, logout } = useAuthStore();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const { user } = useAuthStore();
 
   return (
-    <div 
+    <div
       className="min-h-screen relative"
       style={{
         backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
       }}
     >
       {/* Background overlay for better readability */}
       <div className="absolute inset-0 bg-background/70 backdrop-blur-[1px]"></div>
-      
+
       {/* Fixed Navbar with blur effect */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -44,21 +37,21 @@ const Index = () => {
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                   {user?.name ? user.name.charAt(0).toUpperCase() + user.name.slice(1) + "'s Board" : 'Kanban Board'}
+                  {user?.name
+                    ? user.name.charAt(0).toUpperCase() +
+                      user.name.slice(1) +
+                      "'s Board"
+                    : "Kanban Board"}
                 </h1>
               </div>
               <div className="p-2 bg-primary rounded-lg">
                 <LayoutDashboard className="h-6 w-6 text-primary-foreground" />
               </div>
             </div>
-            {/* Filter Bar in Navbar */}
-<FilterBar />
             <div className="flex gap-2">
+              <FilterBar />
               <ThemeToggle />
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+              <UserMenu />
             </div>
           </div>
         </div>
