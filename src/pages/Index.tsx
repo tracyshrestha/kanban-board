@@ -36,7 +36,7 @@ const Index = () => {
           <div className="flex items-center justify-between gap-4 mb-1">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-foreground">
+                <h1 className=" text-xl lg:text-2xl font-bold text-foreground">
                   {user?.name
                     ? user.name.charAt(0).toUpperCase() +
                       user.name.slice(1) +
@@ -63,7 +63,7 @@ const Index = () => {
 
       {/* Main content with padding to account for fixed navbar */}
       <div className="relative z-10 pt-8">
-        <div className="container mx-auto px-4 py-8 pt-14 max-w-7xl">
+        <div className="container mx-auto px-2 py-8 pt-14 max-w-8xl">
           <KanbanBoard />
         </div>
       </div>

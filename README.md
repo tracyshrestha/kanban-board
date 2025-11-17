@@ -1,73 +1,147 @@
-# React + TypeScript + Vite
+📌 Kanban Board
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple and modern Trello Kanban Template style task management board built using React, TypeScript, and Vite.
+Supports drag & drop, multiple columns, and a clean UI to organize tasks visually.
 
-Currently, two official plugins are available:
+⭐ Project Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This Kanban Board allows users to:
 
-## React Compiler
+Create, edit, and delete tasks
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Move tasks across columns with drag & drop
 
-## Expanding the ESLint configuration
+Reorder tasks within the same column
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Use a clean, responsive, and accessible UI
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Easily extend with backend APIs or persistent storage
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+This project was built as part of improving my UI engineering and advanced React patterns.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🛠️ Tech Stack
+Category	Tools
+Framework	React (TypeScript)
+Build System	Vite
+Drag & Drop	dnd-kit
+Styling	CSS / Tailwind-ready
+State Mgmt	Local state, clean TypeScript models
+Tooling	ESLint, Prettier
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+🗂️ Project Structure
+kanban-board/
+│
+├── public/                # Static assets
+├── src/
+│   ├── components/        # UI components (Columns, Tasks, Dialogs)
+│   ├── hooks/             # Custom hooks (useSortable logic, etc.)
+│   ├── types/             # TypeScript types (Column, Task, Status)
+│   ├── utils/             # Utility helpers
+│   ├── App.tsx            # Main app layout
+│   └── main.tsx           # Entry point
+│
+├── vite.config.ts         # Vite configuration
+├── tsconfig.json          # TypeScript config
+└── package.json
+
+
+🚀 Getting Started
+1️⃣ Clone the Repository
+git clone https://github.com/tracyshrestha/kanban-board.git
+cd kanban-board
+
+2️⃣ Install Dependencies
+npm install
+# or
+yarn install
+
+3️⃣ Start Development Server
+npm run dev
+# or
+yarn dev
+
+
+The project will start on:
+
+http://localhost:5173/
+
+4️⃣ Build for Production
+npm run build
+
+5️⃣ Preview Production Build
+npm run preview
+
+
+🧠 Approach & Architecture
+
+The Kanban board is built with a simple but scalable architecture.
+
+🔹 State Structure
+
+Tasks and columns are modeled using TypeScript interfaces:
+
+export interface Task {
+  id: string;
+  title: string;
+  description?: string;
+  status: string;
+}
+
+export interface Column {
+  id: string;
+  title: string;
+  tasks: Task[];
+}
+
+🔹 Drag & Drop
+
+Implemented using @dnd-kit/core and @dnd-kit/sortable
+
+Smooth animations and CSS transforms
+
+Each column is wrapped in a SortableContext
+
+Tasks use useSortable for movement and reordering
+
+🔹 UI/UX Logic
+
+Hover actions for edit/delete buttons
+
+Floating buttons that don’t shift text
+
+Automatic column width layout
+
+Responsive and fast rendering
+
+🔹 Extensibility
+
+This project is built with future scalability in mind. You could add:
+
+User authentication
+
+Backend with Laravel/Node.js
+
+Real-time features (Pusher/WebSocket)
+
+Task filtering, labels & priority
+
+Database persistence
+
+🤝 Contributing
+
+Pull requests are welcome!
+To contribute:
+
+Fork the project
+
+Create a feature branch
+
+Commit your changes
+
+Open a PR
+
+📄 License
+Copyright © 2025 Tracy Shrestha
+All rights reserved.
