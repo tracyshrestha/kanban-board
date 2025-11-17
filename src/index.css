@@ -171,3 +171,9 @@ body {
 img, svg {
   color: inherit;
 }
+
+@layer utilities {
+  .shadow-around {
+    box-shadow: 0 0 12px rgba(0,0,0,0.12);
+  }
+}

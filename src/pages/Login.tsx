@@ -7,6 +7,11 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import kanbanImg from "@/assets/kanban1.png";
+import trello from "@/assets/Trello.png";
+import trelloDark from "@/assets/TrelloDark.png";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,6 +19,19 @@ const Login = () => {
   const [errors, setErrors] = useState({ email: '', password: '' });
   const login = useAuthStore((state) => state.login);
   const navigate = useNavigate();
+
+    const { theme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="min-h-screen bg-background" />;
+  }
+
+  const bgImage = theme === "dark" ? trelloDark : trello;
 
   const validateForm = () => {
     const newErrors = { email: '', password: '' };
@@ -49,27 +67,35 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
-
+      <div
+    className="min-h-screen flex items-center justify-center px-4 relative"
+    style={{
+      backgroundImage: `url(${bgImage})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundBlendMode: "overlay",
+    }}
+  >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="relative z-10"
       >
-        <Card className="w-full min-w-md">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center justify-center mb-4">
-              <div className=" rounded-lg">
-                 <img
-                  src={kanbanImg}
-                  alt="Kanban"
-                  className="h-10 w-10 text-primary-foreground"
-                />
-              </div>
+        <Card className="w-full lg:min-w-md min-w-sm bg-background backdrop-blur-sm py-16">
+          <CardHeader className="  space-y-1 justify-center">
+            <div className="flex">
+              <img
+                src={kanbanImg}
+                alt="Kanban"
+                className="h-10 w-10 text-primary-foreground"
+              />
+              <CardTitle className="text-4xl text-center">Trello</CardTitle>
             </div>
-            <CardTitle className="text-2xl text-center">Welcome back</CardTitle>
-            <CardDescription className="text-center">
-              Enter your credentials to access your board
+
+            <CardDescription className="text-center text-lg font-bold ">
+              Log in to continue
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -103,13 +129,13 @@ const Login = () => {
                 )}
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full">
+            <CardFooter className="flex flex-col space-y-4 mt-8">
+              <Button type="submit" className="w-full bg-[#1558BC] text-white font-semibold">
                 Sign In
               </Button>
               <p className="text-sm text-center text-muted-foreground">
-                Don't have an account?{' '}
-                <Link to="/register" className="text-primary hover:underline">
+                Don't have an account?{" "}
+                <Link to="/register" className="text-primary hover:underline ">
                   Sign up
                 </Link>
               </p>
