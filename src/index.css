@@ -1,125 +1,173 @@
+/* 
+   Tailwind v4 + shadcn-friendly design tokens + utility classes
+   Tokens are in :root (light) and .dark (dark).
+   Utility classes use hsl(var(--...)) format 
+*/
+
 @import "tailwindcss";
 
+/* ---------------------------
+   Design tokens - Light theme
+   --------------------------- */
+:root {
+  --background:  0 0% 98%;
+  --foreground: 210 70% 19%;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-@layer base {
-  :root {
-    --background: 210 20% 98%;
-    --foreground: 222.2 47% 11%;
+  --card: 0 0% 93%;
+  --card-foreground: 222.2 47% 11%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47% 11%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47% 11%;
+  --primary: 199 89% 48%;
+  --primary-foreground:  72 60% 4%;
 
-    --primary: 199 89% 48%;
-    --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 0 0% 98%;
+  --muted-foreground: 215.4 16.3% 46.9%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 199 89% 48%;
+  --accent-foreground: 0 0% 100%;
 
-    --accent: 199 89% 48%;
-    --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 220 13% 91%;
+  --ring: 199 89% 48%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 220 13% 91%;
-    --ring: 199 89% 48%;
+  --radius: 0.5rem;
 
-    --radius: 0.5rem;
+  --todo: 45 93% 58%;
+  --todo-foreground: 0 0% 0%;
+  --in-progress: 199 89% 48%;
+  --in-progress-foreground: 0 0% 100%;
+  --done: 142 76% 36%;
+  --done-foreground: 0 0% 100%;
 
-    --todo: 45 93% 58%;
-    --todo-foreground: 26 83% 14%;
-    --in-progress: 199 89% 48%;
-    --in-progress-foreground: 0 0% 100%;
-    --done: 142 76% 36%;
-    --done-foreground: 0 0% 100%;
-
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 222.2 47% 11%;
-    --foreground: 210 40% 98%;
-
-    --card: 217.2 32.6% 17.5%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 47% 11%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 199 89% 48%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 199 89% 48%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 199 89% 48%;
-
-    --todo: 45 93% 58%;
-    --todo-foreground: 26 83% 14%;
-    --in-progress: 199 89% 48%;
-    --in-progress-foreground: 0 0% 100%;
-    --done: 142 76% 36%;
-    --done-foreground: 0 0% 100%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
 }
 
-@layer base {
-  html, body {
-    overflow-y: scroll;
-    scrollbar-width: none; /* Firefox */
-  }
+/* ---------------------------
+   Design tokens - Dark theme
+   --------------------------- */
+.dark {
+  --background:  72 60% 4%;
+  /* --background: 222.2 47% 11%; */
+  --foreground: 210 70% 19%;
 
-   body {
-    @apply font-sans;
-    font-family: 'Inter', sans-serif;
-  }
+  --card: 225 5% 15%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222.2 47% 11%;
+  --popover-foreground: 210 40% 98%;
+
+  --primary: 199 89% 48%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+
+  --accent: 199 89% 48%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 199 89% 48%;
+
+  --todo: 45 93% 58%;
+  --todo-foreground: 220 4% 75%;
+  --in-progress: 199 89% 48%;
+  --in-progress-foreground: 0 0% 100%;
+  --done: 142 76% 36%;
+  --done-foreground: 0 0% 100%;
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
+
+/* ---------------------------
+   Utility classes using hsl(var(--...))
+   (use these directly in markup)
+   --------------------------- */
+
+/* Backgrounds */
+.bg-background        { background-color: hsl(var(--background)); }
+.bg-card              { background-color: hsl(var(--card)); }
+.bg-popover           { background-color: hsl(var(--popover)); }
+.bg-primary           { background-color: hsl(var(--primary)); }
+.bg-secondary         { background-color: hsl(var(--secondary)); }
+.bg-muted             { background-color: hsl(var(--muted)); }
+.bg-accent            { background-color: hsl(var(--accent)); }
+.bg-destructive       { background-color: hsl(var(--destructive)); }
+.bg-sidebar           { background-color: hsl(var(--sidebar-background)); }
+
+/* Text colors */
+.text-foreground            { color: hsl(var(--foreground)); }
+.text-card-foreground       { color: hsl(var(--card-foreground)); }
+.text-popover-foreground    { color: hsl(var(--popover-foreground)); }
+.text-primary-foreground    { color: hsl(var(--primary-foreground)); }
+.text-secondary-foreground  { color: hsl(var(--secondary-foreground)); }
+.text-muted-foreground      { color: hsl(var(--muted-foreground)); }
+.text-accent-foreground     { color: hsl(var(--accent-foreground)); }
+.text-destructive-foreground{ color: hsl(var(--destructive-foreground)); }
+.text-sidebar-foreground    { color: hsl(var(--sidebar-foreground)); }
+
+/* Border / ring / input */
+.border-border   { border-color: hsl(var(--border)); }
+.input-bg        { background-color: hsl(var(--input)); }
+.ring-ring       { box-shadow: 0 0 0 3px color-mix(in srgb, hsl(var(--ring)) 12%, transparent); }
+
+/* Placeholder */
+.placeholder-muted { color: hsl(var(--muted-foreground)); }
+
+/* Status pills */
+.bg-todo           { background-color: hsl(var(--todo)); }
+.text-todo-foreground { color: hsl(var(--todo-foreground)); }
+
+.bg-in-progress       { background-color: hsl(var(--in-progress)); }
+.text-in-progress-foreground { color: hsl(var(--in-progress-foreground)); }
+
+.bg-done           { background-color: hsl(var(--done)); }
+.text-done-foreground { color: hsl(var(--done-foreground)); }
+
+/* Utility helpers */
+.rounded-radius { border-radius: var(--radius); }
+
+/* ---------------------------
+   Base page styles
+   --------------------------- */
+html, body {
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+img, svg {
+  color: inherit;
 }

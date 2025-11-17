@@ -253,7 +253,7 @@ export const KanbanBoard = () => {
       <SortableContext items={columnIds} strategy={horizontalListSortingStrategy}>
         <div
           ref={scrollContainerRef}
-          className={`flex gap-6 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
+          className={`flex gap-4 overflow-x-auto pb-4 min-h-[83vh]  [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${
             isDraggingBackground 
               ? 'cursor-grabbing' 
               : isHoveringScrollableArea 
@@ -281,7 +281,7 @@ export const KanbanBoard = () => {
               <Button
                 onClick={() => setIsAddingBoard(true)}
                 variant="outline"
-                className="min-w-[280px] h-10 border-2 border-muted-foreground/30 bg-muted/30 hover:bg-muted/50 flex items-center justify-center gap-2"
+                className="min-w-[280px] h-10 text-foreground font-semibold flex items-left justify-start  gap-2  bg-white/30 rounded-xl"
               >
                 <Plus className="h-6 w-6" />
                 <span>Add another list</span>

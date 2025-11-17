@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/useAuthStore';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { LayoutDashboard } from 'lucide-react';
 import { motion } from 'framer-motion';
+import kanbanImg from "@/assets/kanban1.png";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -51,19 +50,21 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 relative">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <Card className="w-full max-w-md">
+        <Card className="w-full min-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
-              <div className="p-3 bg-primary rounded-lg">
-                <LayoutDashboard className="h-8 w-8 text-primary-foreground" />
+              <div className=" rounded-lg">
+                 <img
+                  src={kanbanImg}
+                  alt="Kanban"
+                  className="h-10 w-10 text-primary-foreground"
+                />
               </div>
             </div>
             <CardTitle className="text-2xl text-center">Welcome back</CardTitle>

@@ -56,25 +56,26 @@ export const EditTaskDialog = ({ task, isOpen, onClose }: EditTaskDialogProps) =
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="edit-title">Task Title</Label>
+            <Label htmlFor="edit-title" className='text-primary-foreground'>Card Title</Label>
             <Input
               id="edit-title"
               placeholder="Enter task title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
+               className='border-primary-foreground text-primary-foreground'
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit-status">Status</Label>
+            <Label htmlFor="edit-status" className='text-primary-foreground'>Status</Label>
             <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
-              <SelectTrigger id="edit-status">
-                <SelectValue />
+              <SelectTrigger id="edit-status" className="border-primary-foreground text-primary-foreground w-full">
+                <SelectValue className='text-primary-foreground'/>
               </SelectTrigger>
               <SelectContent>
                 {COLUMNS.map((column) => (
-                  <SelectItem key={column.id} value={column.id}>
+                  <SelectItem key={column.id} value={column.id} >
                     {column.title}
                   </SelectItem>
                 ))}
@@ -83,7 +84,7 @@ export const EditTaskDialog = ({ task, isOpen, onClose }: EditTaskDialogProps) =
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className='text-primary-foreground'>
               Cancel
             </Button>
             <Button type="submit" disabled={!title.trim()}>

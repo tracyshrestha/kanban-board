@@ -36,7 +36,7 @@ export function UserMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon" className="h-9 w-9">
-          <User className="h-4 w-4" />
+          <User className="h-4 w-4" strokeWidth={3} />
           <span className="sr-only">User menu</span>
         </Button>
       </DropdownMenuTrigger>

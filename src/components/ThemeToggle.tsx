@@ -10,7 +10,7 @@ import {
 } from './ui/dropdown-menu';
 
 export function ThemeToggle() {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // useEffect only runs on the client, so now we can safely show the UI
@@ -21,17 +21,29 @@ export function ThemeToggle() {
   if (!mounted) {
     return (
       <Button variant="outline" size="icon" className="h-9 w-9">
-        <Sun className="h-4 w-4" />
+        <Sun className="h-4 w-4 font-bold " strokeWidth={2.5} />
       </Button>
     );
   }
 
+  // Function to get the current theme icon
+  const getThemeIcon = () => {
+    switch (theme) {
+      case 'dark':
+        return <Moon className="h-4 w-4" strokeWidth={3}/>;
+      case 'light':
+        return <Sun className="h-4 w-4"strokeWidth={3} />;
+      case 'system':
+      default:
+        return <Monitor className="h-4 w-4" strokeWidth={3}/>;
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="h-9 w-9">
-          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+        <Button variant="outline" size="icon" className="h-9 w-9 ">
+          {getThemeIcon()}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
