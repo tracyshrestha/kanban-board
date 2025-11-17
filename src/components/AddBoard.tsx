@@ -32,7 +32,7 @@ export const AddBoard = ({ onSave, onCancel }: AddBoardProps) => {
   };
 
   return (
-    <div className="min-w-[280px] rounded-lg border-2 border-dashed border-muted-foreground/30 bg-muted/30 p-4">
+    <div className="min-w-[280px] rounded-lg border-2  border-muted-foreground/30 bg-muted/30 p-4">
       <div className="space-y-3">
         <Input
           ref={inputRef}

@@ -54,12 +54,16 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         whileHover={{ scale: 1.02 }}
-        className={`bg-card border rounded-lg p-4 shadow-sm hover:shadow-md transition-all group ${
-          isSortableDragging ? 'opacity-50' : ''
+        className={`relative bg-card border rounded-lg p-4 shadow-sm hover:shadow-md transition-all group ${
+          isSortableDragging ? 'opacity-50' :''
         }`}
       >
         <div className="flex items-start gap-2">
-           <div className={`transition-opacity ${task.completed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+          <div
+            className={`${
+              task.completed ? "block" : "hidden group-hover:block"
+            } transition-all`}
+          >
             <Checkbox
               checked={task.completed || false}
               onCheckedChange={() => toggleTaskComplete(task.id)}
@@ -75,7 +79,7 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className={`font-medium text-card-foreground break-words `}>
+            <h4 className="font-medium text-card-foreground break-all">
               {task.title}
             </h4>
             <p className="text-xs text-muted-foreground mt-1">
@@ -83,7 +87,7 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
             </p>
           </div>
 
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
             <Button
               variant="ghost"
               size="icon"
