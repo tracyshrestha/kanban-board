@@ -48,31 +48,32 @@ export const AddTaskDialog = ({ isOpen, onClose, defaultStatus = 'todo' }: AddTa
         <DialogHeader>
           <DialogTitle>Add New Task</DialogTitle>
           <DialogDescription>
-            Create a new task for your Kanban board
+            Create a new task for list
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">Task Title</Label>
+            <Label htmlFor="title" className='text-primary-foreground'>Card Title</Label>
             <Input
               id="title"
               placeholder="Enter task title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               autoFocus
+              className='border-primary-foreground text-primary-foreground'
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status" className='text-primary-foreground'>Status</Label>
             <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
-              <SelectTrigger id="status">
-                <SelectValue />
+              <SelectTrigger id="status" className="border-primary-foreground text-primary-foreground">
+                <SelectValue/>
               </SelectTrigger>
               <SelectContent>
                 {columns.map((column) => (
-                  <SelectItem key={column.id} value={column.id}>
+                  <SelectItem key={column.id} value={column.id} >
                     {column.title}
                   </SelectItem>
                 ))}
@@ -81,10 +82,10 @@ export const AddTaskDialog = ({ isOpen, onClose, defaultStatus = 'todo' }: AddTa
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className='text-primary-foreground '>
               Cancel
             </Button>
-            <Button type="submit" disabled={!title.trim()}>
+            <Button type="submit" disabled={!title.trim()} className='text-primary-foreground' >
               Add Task
             </Button>
           </div>

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const FilterBar = () => {
-  const { filter, statusFilter, setFilter, setStatusFilter } = useTaskStore();
+  const { filter, setFilter, setStatusFilter } = useTaskStore();
   const { columns } = useBoardStore();
   const [open, setOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -21,10 +21,10 @@ export const FilterBar = () => {
     return (
       <button
         onClick={() => setIsExpanded(true)}
-        className="p-2 hover:bg-background/50 rounded-lg transition-colors"
+        className="p-2 "
         aria-label="Open search"
       >
-        <Search className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
+        <Search className="h-5 w-5 text-foreground hover:text-foreground transition-colors" strokeWidth={2.5} />
       </button>
     );
   }
@@ -33,7 +33,7 @@ export const FilterBar = () => {
   return (
     <div className="flex gap-2 items-center">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground pointer-events-none" />
 
         <Input
           placeholder="Search tasks..."
@@ -47,7 +47,7 @@ export const FilterBar = () => {
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
             <button
-              className="absolute right-9 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-9 top-1/2 transform -translate-y-1/2 text-foreground hover:text-foreground transition-colors"
               onClick={(e) => e.stopPropagation()}
             >
               <Tag className="h-4 w-4" />
@@ -70,7 +70,6 @@ export const FilterBar = () => {
         </DropdownMenu>
 
         {/* Clear + Collapse Button */}
-        {(filter !== "" || statusFilter !== "all") && (
           <button
             onClick={() => {
               setFilter("");
@@ -78,11 +77,10 @@ export const FilterBar = () => {
               setOpen(false);
               setIsExpanded(false); // collapse search bar
             }}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-foreground hover:text-foreground transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
-        )}
       </div>
     </div>
   );

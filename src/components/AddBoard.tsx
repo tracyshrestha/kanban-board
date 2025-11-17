@@ -32,32 +32,32 @@ export const AddBoard = ({ onSave, onCancel }: AddBoardProps) => {
   };
 
   return (
-    <div className="min-w-[280px] rounded-lg border-2  border-muted-foreground/30 bg-muted/30 p-4">
+    <div className="min-w-[280px] rounded-xl border-2  border-muted-foreground/30 bg-background p-4">
       <div className="space-y-3">
         <Input
           ref={inputRef}
-          placeholder="Enter board name..."
+          placeholder="Enter list name..."
           value={name}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full"
+          className="w-full bg-card text-primary-foreground"
         />
         <div className="flex gap-2">
           <Button
             onClick={handleSave}
             disabled={!name.trim()}
             size="sm"
-            className="flex-1"
+            className="p-4.5"
           >
-            Save
+            Add List
           </Button>
           <Button
             onClick={onCancel}
             variant="outline"
             size="sm"
-            className="flex-1"
+            className=" text-primary-foreground"
           >
-            Cancel
+           X
           </Button>
         </div>
       </div>

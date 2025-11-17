@@ -67,7 +67,7 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
             <Checkbox
               checked={task.completed || false}
               onCheckedChange={() => toggleTaskComplete(task.id)}
-              className="mt-0.5 rounded-full"
+              className="mt-0.5 rounded-full text-gray-200"
             />
           </div>
           <div
@@ -87,14 +87,14 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
             </p>
           </div>
 
-          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-card">
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8"
               onClick={() => setIsEditDialogOpen(true)}
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="h-4 w-4 text-card-foreground" />
             </Button>
             <Button
               variant="ghost"
@@ -102,7 +102,7 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
               className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
               onClick={() => deleteTask(task.id)}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-4 w-4 text-card-foreground " />
             </Button>
           </div>
         </div>
