@@ -2,16 +2,14 @@ import { useDroppable } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import type { Column, TaskStatus } from '@/types/task';
+import type { Column, ColumnId } from '@/types/board';
 import { useTaskStore } from '@/store/useTaskStore';
 import { TaskCard } from './TaskCard';
 import { motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { Maximize2, Minimize2, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useState } from 'react';
 import { AddTaskDialog } from './AddTaskDialog';
-import { BsArrowsAngleExpand } from "react-icons/bs";
-import { BsArrowsAngleContract } from "react-icons/bs";
 
 interface KanbanColumnProps {
   column: Column;
@@ -20,7 +18,7 @@ interface KanbanColumnProps {
   isOverlay?: boolean;
 }
 
-const getColumnColor = (status: TaskStatus, columnColor?: string) => {
+const getColumnColor = (status: ColumnId, columnColor?: string) => {
   const colorMap: Record<string, string> = {
     todo: "bg-background/10 border-todo/30",
     "in-progress": "bg-in-background/10 border-in-progress/30",
@@ -32,7 +30,7 @@ const getColumnColor = (status: TaskStatus, columnColor?: string) => {
   return colorMap[status] || "bg-background border-muted/30";
 };
 
-const getHeaderColor = (status: TaskStatus, columnColor?: string) => {
+const getHeaderColor = (status: ColumnId, columnColor?: string) => {
   const colorMap: Record<string, string> = {
     todo: "bg-background text-todo-foreground",
     "in-progress": "bg-background text-todo-foreground",
@@ -61,7 +59,7 @@ const ColumnChrome = ({
         className={`w-10 rounded-xl px-2 py-3 flex flex-col items-center gap-2 ${getHeaderColor(column.id, column.color)}`}
       >
         <div className="h-6 w-6 flex items-center justify-center">
-          <BsArrowsAngleExpand className="h-3 w-3" strokeWidth={1.5} />
+          <Maximize2 className="h-3 w-3" strokeWidth={1.5} />
         </div>
         <h3 className="font-semibold text-sm [writing-mode:vertical-rl]">
           {column.title}
@@ -239,7 +237,7 @@ const SortableKanbanColumn = ({
               onToggleCollapse?.();
             }}
           >
-            <BsArrowsAngleExpand className="h-3 w-3" strokeWidth={1.5} />
+            <Maximize2 className="h-3 w-3" strokeWidth={1.5} />
           </Button>
           <h3 className="font-semibold text-sm [writing-mode:vertical-rl]">
             {column.title}
@@ -270,7 +268,7 @@ const SortableKanbanColumn = ({
                 className="h-6 w-6 hover:bg-white/20"
                 onClick={() => onToggleCollapse?.()}
               >
-                <BsArrowsAngleContract className="h-4 w-4" />
+                <Minimize2 className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
