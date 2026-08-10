@@ -34,11 +34,11 @@ export const KanbanBoard = () => {
     const columnTasks = tasks.filter((task) => task.status === column.id);
     const matchingTasks = columnTasks.filter((task) => {
       const matchesText = filter === '' || task.title.toLowerCase().includes(filter.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
+      const matchesStatus = statusFilter.length === 0 || statusFilter.includes(task.status);
       return matchesText && matchesStatus;
     });
     // Show column if it has matching tasks, or if no filter is applied
-    return matchingTasks.length > 0 || (filter === '' && statusFilter === 'all');
+    return matchingTasks.length > 0 || (filter === '' && statusFilter.length === 0);
   });
 
   const sensors = useSensors(

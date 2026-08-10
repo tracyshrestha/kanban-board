@@ -54,9 +54,11 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         whileHover={{ scale: 1.02 }}
-        className={`relative bg-card border rounded-lg p-4 shadow-sm hover:shadow-md transition-all group ${
-          isSortableDragging ? 'opacity-50' :''
-        }`}
+        className={`relative border rounded-lg p-4 shadow-sm hover:shadow-md transition-all group ${
+          task.completed
+            ? 'bg-card/55 opacity-70'
+            : 'bg-card'
+        } ${isSortableDragging ? 'opacity-50' : ''}`}
       >
         <div className="flex items-start gap-2">
           <div
@@ -79,15 +81,29 @@ export const TaskCard = ({ task, isDragging = false }: TaskCardProps) => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <h4 className="font-medium text-card-foreground break-all">
+            <h4
+              className={`font-medium break-all transition-colors ${
+                task.completed
+                  ? 'line-through text-muted-foreground'
+                  : 'text-card-foreground'
+              }`}
+            >
               {task.title}
             </h4>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p
+              className={`text-xs mt-1 ${
+                task.completed ? 'text-muted-foreground/70' : 'text-muted-foreground'
+              }`}
+            >
               {new Date(task.createdAt).toLocaleDateString()}
             </p>
           </div>
 
-          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 bg-card">
+          <div
+            className={`absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 ${
+              task.completed ? 'bg-transparent' : 'bg-card'
+            }`}
+          >
             <Button
               variant="ghost"
               size="icon"

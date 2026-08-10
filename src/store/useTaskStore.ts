@@ -1,18 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import  {type Task, type TaskStatus, COLUMNS } from '@/types/task';
+import { type Task, type TaskStatus, COLUMNS } from '@/types/task';
 
 interface TaskState {
   tasks: Task[];
   filter: string;
-  statusFilter: TaskStatus | 'all';
+  statusFilter: TaskStatus[];
   columnOrder: TaskStatus[];
   addTask: (title: string, status: TaskStatus) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
   moveTask: (id: string, newStatus: TaskStatus, newOrder: number) => void;
   setFilter: (filter: string) => void;
-  setStatusFilter: (status: TaskStatus | 'all') => void;
+  setStatusFilter: (statuses: TaskStatus[]) => void;
+  toggleStatusFilter: (status: TaskStatus) => void;
+  clearStatusFilter: () => void;
   reorderTasks: (status: TaskStatus, taskIds: string[]) => void;
   toggleTaskComplete: (id: string) => void;
   reorderColumns: (columnIds: TaskStatus[]) => void;
@@ -23,15 +25,16 @@ export const useTaskStore = create<TaskState>()(
     (set) => ({
       tasks: [],
       filter: '',
-      statusFilter: 'all',
-      columnOrder: COLUMNS.map(col => col.id),
+      statusFilter: [],
+      columnOrder: COLUMNS.map((col) => col.id),
 
       addTask: (title, status) =>
         set((state) => {
           const tasksInColumn = state.tasks.filter((t) => t.status === status);
-          const maxOrder = tasksInColumn.length > 0 
-            ? Math.max(...tasksInColumn.map((t) => t.order))
-            : -1;
+          const maxOrder =
+            tasksInColumn.length > 0
+              ? Math.max(...tasksInColumn.map((t) => t.order))
+              : -1;
 
           return {
             tasks: [
@@ -65,9 +68,10 @@ export const useTaskStore = create<TaskState>()(
           if (!task) return state;
 
           const otherTasks = state.tasks.filter((t) => t.id !== id);
-          const tasksInNewColumn = otherTasks.filter((t) => t.status === newStatus);
+          const tasksInNewColumn = otherTasks.filter(
+            (t) => t.status === newStatus
+          );
 
-          // Reorder tasks in the new column
           const reorderedTasks = tasksInNewColumn
             .sort((a, b) => a.order - b.order)
             .map((t, index) => ({
@@ -75,14 +79,12 @@ export const useTaskStore = create<TaskState>()(
               order: index >= newOrder ? index + 1 : index,
             }));
 
-          // Update the moved task
           const updatedTask = {
             ...task,
             status: newStatus,
             order: newOrder,
           };
 
-          // Combine all tasks
           const finalTasks = [
             ...otherTasks.filter((t) => t.status !== newStatus),
             ...reorderedTasks,
@@ -96,6 +98,18 @@ export const useTaskStore = create<TaskState>()(
 
       setStatusFilter: (statusFilter) => set({ statusFilter }),
 
+      toggleStatusFilter: (status) =>
+        set((state) => {
+          const isSelected = state.statusFilter.includes(status);
+          return {
+            statusFilter: isSelected
+              ? state.statusFilter.filter((s) => s !== status)
+              : [...state.statusFilter, status],
+          };
+        }),
+
+      clearStatusFilter: () => set({ statusFilter: [] }),
+
       reorderTasks: (status, taskIds) =>
         set((state) => ({
           tasks: state.tasks.map((task) => {
@@ -105,7 +119,7 @@ export const useTaskStore = create<TaskState>()(
             }
             return task;
           }),
-          })),
+        })),
 
       toggleTaskComplete: (id) =>
         set((state) => ({
@@ -113,11 +127,28 @@ export const useTaskStore = create<TaskState>()(
             task.id === id ? { ...task, completed: !task.completed } : task
           ),
         })),
-        reorderColumns: (columnIds) =>
-        set({ columnOrder: columnIds }),
+
+      reorderColumns: (columnIds) => set({ columnOrder: columnIds }),
     }),
     {
       name: 'kanban-storage',
+      // Migrate legacy single status filter ("all" | status id) → array
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<TaskState> & {
+          statusFilter?: TaskStatus | TaskStatus[] | 'all';
+        };
+        let statusFilter: TaskStatus[] = [];
+        if (Array.isArray(p.statusFilter)) {
+          statusFilter = p.statusFilter;
+        } else if (p.statusFilter && p.statusFilter !== 'all') {
+          statusFilter = [p.statusFilter];
+        }
+        return {
+          ...current,
+          ...p,
+          statusFilter,
+        };
+      },
     }
   )
 );

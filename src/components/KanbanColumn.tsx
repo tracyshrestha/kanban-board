@@ -110,7 +110,7 @@ export const KanbanColumn = ({
         .toLowerCase()
         .includes(filter.toLowerCase());
       const matchesStatus =
-        statusFilter === 'all' || task.status === statusFilter;
+        statusFilter.length === 0 || statusFilter.includes(task.status);
       return matchesText && matchesStatus;
     })
     .sort((a, b) => a.order - b.order);
