@@ -11,6 +11,7 @@ interface AuthStore {
   isAuthenticated: boolean;
   login: (email: string, password: string, name?: string) => void;
   register: (email: string, password: string, name: string) => void;
+  updateProfile: (name: string, email: string) => void;
   logout: () => void;
 }
 
@@ -30,6 +31,13 @@ export const useAuthStore = create<AuthStore>()(
           user: { email, name },
           isAuthenticated: true,
         });
+      },
+      updateProfile: (name: string, email: string) => {
+        set((state) => ({
+          user: state.user
+            ? { ...state.user, name: name.trim(), email: email.trim() }
+            : { name: name.trim(), email: email.trim() },
+        }));
       },
       logout: () => {
         set({ user: null, isAuthenticated: false });
