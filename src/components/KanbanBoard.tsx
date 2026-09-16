@@ -15,22 +15,30 @@ export const KanbanBoard = () => {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const [isHoveringScrollableArea, setIsHoveringScrollableArea] = useState(false);
+  const [collapsedColumns, setCollapsedColumns] = useState<Record<string, boolean>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number>(0);
   const scrollStartX = useRef<number>(0);
   const { tasks, moveTask, filter, statusFilter } = useTaskStore();
   const { columns, addColumn, reorderColumns } = useBoardStore();
+
+  const toggleColumnCollapsed = (columnId: string) => {
+    setCollapsedColumns((prev) => ({
+      ...prev,
+      [columnId]: !prev[columnId],
+    }));
+  };
   
   // Filter columns to only show those that contain matching tasks
   const filteredColumns = columns.filter((column) => {
     const columnTasks = tasks.filter((task) => task.status === column.id);
     const matchingTasks = columnTasks.filter((task) => {
       const matchesText = filter === '' || task.title.toLowerCase().includes(filter.toLowerCase());
-      const matchesStatus = statusFilter === 'all' || task.status === statusFilter;
+      const matchesStatus = statusFilter.length === 0 || statusFilter.includes(task.status);
       return matchesText && matchesStatus;
     });
     // Show column if it has matching tasks, or if no filter is applied
-    return matchingTasks.length > 0 || (filter === '' && statusFilter === 'all');
+    return matchingTasks.length > 0 || (filter === '' && statusFilter.length === 0);
   });
 
   const sensors = useSensors(
@@ -268,7 +276,11 @@ export const KanbanBoard = () => {
         >
           {filteredColumns.map((column) => (
             <div key={column.id} className="shrink-0" data-draggable="true">
-              <KanbanColumn column={column} />
+              <KanbanColumn
+                column={column}
+                isCollapsed={!!collapsedColumns[column.id]}
+                onToggleCollapse={() => toggleColumnCollapsed(column.id)}
+              />
             </div>
           ))}
           
@@ -291,14 +303,18 @@ export const KanbanBoard = () => {
         </div>
       </SortableContext>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeTask ? (
           <div className="rotate-3 opacity-80">
             <TaskCard task={activeTask} isDragging />
           </div>
         ) : activeColumn ? (
-          <div className="opacity-80">
-            <KanbanColumn column={activeColumn} />
+          <div className="opacity-90 shadow-xl cursor-grabbing">
+            <KanbanColumn
+              column={activeColumn}
+              isCollapsed={!!collapsedColumns[activeColumn.id]}
+              isOverlay
+            />
           </div>
         ) : null}
       </DragOverlay>
