@@ -16,19 +16,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { TaskStatus } from '@/types/task';
+import type { ColumnId } from '@/types/board';
 import { useTaskStore } from '@/store/useTaskStore';
 import { useBoardStore } from '@/store/useBoardStore';
 
 interface AddTaskDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  defaultStatus?: TaskStatus;
+  defaultStatus?: ColumnId;
 }
 
 export const AddTaskDialog = ({ isOpen, onClose, defaultStatus = 'todo' }: AddTaskDialogProps) => {
   const [title, setTitle] = useState('');
-  const [status, setStatus] = useState<TaskStatus>(defaultStatus);
+  const [status, setStatus] = useState<ColumnId>(defaultStatus);
   const { addTask } = useTaskStore();
   const { columns } = useBoardStore();
 
@@ -67,7 +67,7 @@ export const AddTaskDialog = ({ isOpen, onClose, defaultStatus = 'todo' }: AddTa
 
           <div className="space-y-2">
             <Label htmlFor="status" className='text-primary-foreground'>Status</Label>
-            <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
+            <Select value={status} onValueChange={(value) => setStatus(value as ColumnId)}>
               <SelectTrigger id="status" className="border-primary-foreground text-primary-foreground">
                 <SelectValue/>
               </SelectTrigger>

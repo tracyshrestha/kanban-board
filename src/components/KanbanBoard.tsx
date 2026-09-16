@@ -15,19 +15,12 @@ export const KanbanBoard = () => {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const [isDraggingBackground, setIsDraggingBackground] = useState(false);
   const [isHoveringScrollableArea, setIsHoveringScrollableArea] = useState(false);
-  const [collapsedColumns, setCollapsedColumns] = useState<Record<string, boolean>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dragStartX = useRef<number>(0);
   const scrollStartX = useRef<number>(0);
   const { tasks, moveTask, filter, statusFilter } = useTaskStore();
-  const { columns, addColumn, reorderColumns } = useBoardStore();
-
-  const toggleColumnCollapsed = (columnId: string) => {
-    setCollapsedColumns((prev) => ({
-      ...prev,
-      [columnId]: !prev[columnId],
-    }));
-  };
+  const { columns, addColumn, reorderColumns, collapsedColumns, toggleColumnCollapsed } =
+    useBoardStore();
   
   // Filter columns to only show those that contain matching tasks
   const filteredColumns = columns.filter((column) => {
@@ -280,6 +273,7 @@ export const KanbanBoard = () => {
                 column={column}
                 isCollapsed={!!collapsedColumns[column.id]}
                 onToggleCollapse={() => toggleColumnCollapsed(column.id)}
+
               />
             </div>
           ))}

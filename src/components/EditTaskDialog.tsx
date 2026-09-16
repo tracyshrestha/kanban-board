@@ -16,9 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import type { Task, TaskStatus } from '@/types/task';
+import type { Task } from '@/types/task';
+import type { ColumnId } from '@/types/board';
 import { useTaskStore } from '@/store/useTaskStore';
-import { COLUMNS } from '@/types/task';
+import { useBoardStore } from '@/store/useBoardStore';
 
 interface EditTaskDialogProps {
   task: Task;
@@ -28,8 +29,9 @@ interface EditTaskDialogProps {
 
 export const EditTaskDialog = ({ task, isOpen, onClose }: EditTaskDialogProps) => {
   const [title, setTitle] = useState(task.title);
-  const [status, setStatus] = useState<TaskStatus>(task.status);
+  const [status, setStatus] = useState<ColumnId>(task.status);
   const { updateTask } = useTaskStore();
+  const { columns } = useBoardStore();
 
   useEffect(() => {
     setTitle(task.title);
@@ -69,12 +71,12 @@ export const EditTaskDialog = ({ task, isOpen, onClose }: EditTaskDialogProps) =
 
           <div className="space-y-2">
             <Label htmlFor="edit-status" className='text-primary-foreground'>Status</Label>
-            <Select value={status} onValueChange={(value) => setStatus(value as TaskStatus)}>
+            <Select value={status} onValueChange={(value) => setStatus(value as ColumnId)}>
               <SelectTrigger id="edit-status" className="border-primary-foreground text-primary-foreground w-full">
                 <SelectValue className='text-primary-foreground'/>
               </SelectTrigger>
               <SelectContent>
-                {COLUMNS.map((column) => (
+                {columns.map((column) => (
                   <SelectItem key={column.id} value={column.id} >
                     {column.title}
                   </SelectItem>

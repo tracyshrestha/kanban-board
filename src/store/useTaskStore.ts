@@ -1,23 +1,23 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { type Task, type TaskStatus, COLUMNS } from '@/types/task';
+import type { Task } from '@/types/task';
+import type { ColumnId } from '@/types/board';
 
 interface TaskState {
   tasks: Task[];
   filter: string;
-  statusFilter: TaskStatus[];
-  columnOrder: TaskStatus[];
-  addTask: (title: string, status: TaskStatus) => void;
+  statusFilter: ColumnId[];
+  addTask: (title: string, columnId: ColumnId) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
-  moveTask: (id: string, newStatus: TaskStatus, newOrder: number) => void;
+  deleteTasksInColumn: (columnId: ColumnId) => void;
+  moveTask: (id: string, newColumnId: ColumnId, newOrder: number) => void;
   setFilter: (filter: string) => void;
-  setStatusFilter: (statuses: TaskStatus[]) => void;
-  toggleStatusFilter: (status: TaskStatus) => void;
+  setStatusFilter: (columnIds: ColumnId[]) => void;
+  toggleStatusFilter: (columnId: ColumnId) => void;
   clearStatusFilter: () => void;
-  reorderTasks: (status: TaskStatus, taskIds: string[]) => void;
+  reorderTasks: (columnId: ColumnId, taskIds: string[]) => void;
   toggleTaskComplete: (id: string) => void;
-  reorderColumns: (columnIds: TaskStatus[]) => void;
 }
 
 export const useTaskStore = create<TaskState>()(
@@ -26,11 +26,10 @@ export const useTaskStore = create<TaskState>()(
       tasks: [],
       filter: '',
       statusFilter: [],
-      columnOrder: COLUMNS.map((col) => col.id),
 
-      addTask: (title, status) =>
+      addTask: (title, columnId) =>
         set((state) => {
-          const tasksInColumn = state.tasks.filter((t) => t.status === status);
+          const tasksInColumn = state.tasks.filter((t) => t.status === columnId);
           const maxOrder =
             tasksInColumn.length > 0
               ? Math.max(...tasksInColumn.map((t) => t.order))
@@ -42,7 +41,7 @@ export const useTaskStore = create<TaskState>()(
               {
                 id: crypto.randomUUID(),
                 title,
-                status,
+                status: columnId,
                 createdAt: new Date().toISOString(),
                 order: maxOrder + 1,
               },
@@ -62,14 +61,20 @@ export const useTaskStore = create<TaskState>()(
           tasks: state.tasks.filter((task) => task.id !== id),
         })),
 
-      moveTask: (id, newStatus, newOrder) =>
+      deleteTasksInColumn: (columnId) =>
+        set((state) => ({
+          tasks: state.tasks.filter((task) => task.status !== columnId),
+          statusFilter: state.statusFilter.filter((id) => id !== columnId),
+        })),
+
+      moveTask: (id, newColumnId, newOrder) =>
         set((state) => {
           const task = state.tasks.find((t) => t.id === id);
           if (!task) return state;
 
           const otherTasks = state.tasks.filter((t) => t.id !== id);
           const tasksInNewColumn = otherTasks.filter(
-            (t) => t.status === newStatus
+            (t) => t.status === newColumnId
           );
 
           const reorderedTasks = tasksInNewColumn
@@ -81,12 +86,12 @@ export const useTaskStore = create<TaskState>()(
 
           const updatedTask = {
             ...task,
-            status: newStatus,
+            status: newColumnId,
             order: newOrder,
           };
 
           const finalTasks = [
-            ...otherTasks.filter((t) => t.status !== newStatus),
+            ...otherTasks.filter((t) => t.status !== newColumnId),
             ...reorderedTasks,
             updatedTask,
           ];
@@ -98,22 +103,22 @@ export const useTaskStore = create<TaskState>()(
 
       setStatusFilter: (statusFilter) => set({ statusFilter }),
 
-      toggleStatusFilter: (status) =>
+      toggleStatusFilter: (columnId) =>
         set((state) => {
-          const isSelected = state.statusFilter.includes(status);
+          const isSelected = state.statusFilter.includes(columnId);
           return {
             statusFilter: isSelected
-              ? state.statusFilter.filter((s) => s !== status)
-              : [...state.statusFilter, status],
+              ? state.statusFilter.filter((id) => id !== columnId)
+              : [...state.statusFilter, columnId],
           };
         }),
 
       clearStatusFilter: () => set({ statusFilter: [] }),
 
-      reorderTasks: (status, taskIds) =>
+      reorderTasks: (columnId, taskIds) =>
         set((state) => ({
           tasks: state.tasks.map((task) => {
-            if (task.status === status) {
+            if (task.status === columnId) {
               const newOrder = taskIds.indexOf(task.id);
               return newOrder !== -1 ? { ...task, order: newOrder } : task;
             }
@@ -127,17 +132,15 @@ export const useTaskStore = create<TaskState>()(
             task.id === id ? { ...task, completed: !task.completed } : task
           ),
         })),
-
-      reorderColumns: (columnIds) => set({ columnOrder: columnIds }),
     }),
     {
       name: 'kanban-storage',
-      // Migrate legacy single status filter ("all" | status id) → array
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<TaskState> & {
-          statusFilter?: TaskStatus | TaskStatus[] | 'all';
+          statusFilter?: ColumnId | ColumnId[] | 'all';
+          columnOrder?: unknown;
         };
-        let statusFilter: TaskStatus[] = [];
+        let statusFilter: ColumnId[] = [];
         if (Array.isArray(p.statusFilter)) {
           statusFilter = p.statusFilter;
         } else if (p.statusFilter && p.statusFilter !== 'all') {
@@ -145,7 +148,8 @@ export const useTaskStore = create<TaskState>()(
         }
         return {
           ...current,
-          ...p,
+          tasks: p.tasks ?? current.tasks,
+          filter: p.filter ?? current.filter,
           statusFilter,
         };
       },

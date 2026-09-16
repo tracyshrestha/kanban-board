@@ -1,147 +1,108 @@
-📌 Kanban Board
+# Kanban Board
 
-A simple and modern Trello Kanban Template style task management board built using React, TypeScript, and Vite.
-Supports drag & drop, multiple columns, and a clean UI to organize tasks visually.
+A Trello-style Kanban board built with React, TypeScript, and Vite. Drag-and-drop tasks and columns, filters, local auth, and persisted board state in the browser.
 
-⭐ Project Overview
+## Features
 
-This Kanban Board allows users to:
+- Create, edit, complete, and delete tasks
+- Drag tasks across columns and reorder within a column (@dnd-kit)
+- Add custom columns (lists) and reorder columns
+- Collapse/expand columns (persisted)
+- Text search and multi-column filters (including speech-to-text where supported)
+- Light/dark/system theme
+- Client-side auth + profile (demo; data in `localStorage` via Zustand persist)
 
-Create, edit, and delete tasks
+## Tech Stack
 
-Move tasks across columns with drag & drop
+| Category        | Tools                                      |
+| --------------- | ------------------------------------------ |
+| Framework       | React 19, TypeScript                       |
+| Build           | Vite                                       |
+| Styling         | Tailwind CSS 4, shadcn/ui                  |
+| Drag & drop     | @dnd-kit/core, @dnd-kit/sortable           |
+| State           | Zustand + persist middleware               |
+| Routing         | React Router                               |
+| Animation       | Framer Motion                              |
+| Tooling         | ESLint                                     |
 
-Reorder tasks within the same column
+## Project Structure
 
-Use a clean, responsive, and accessible UI
-
-Easily extend with backend APIs or persistent storage
-
-This project was built as part of improving my UI engineering and advanced React patterns.
-
-
-🛠️ Tech Stack
-Category	Tools
-Framework	React (TypeScript)
-Build System	Vite
-Drag & Drop	dnd-kit
-Styling	CSS / Tailwind-ready
-State Mgmt	Local state, clean TypeScript models
-Tooling	ESLint, Prettier
-
-
-🗂️ Project Structure
+```
 kanban-board/
-│
-├── public/                # Static assets
+├── public/
 ├── src/
-│   ├── components/        # UI components (Columns, Tasks, Dialogs)
-│   ├── hooks/             # Custom hooks (useSortable logic, etc.)
-│   ├── types/             # TypeScript types (Column, Task, Status)
-│   ├── utils/             # Utility helpers
-│   ├── App.tsx            # Main app layout
-│   └── main.tsx           # Entry point
-│
-├── vite.config.ts         # Vite configuration
-├── tsconfig.json          # TypeScript config
-└── package.json
+│   ├── assets/           # Images and logos
+│   ├── components/       # Board UI, auth shell, shared chrome
+│   │   └── ui/           # shadcn/ui primitives
+│   ├── hooks/
+│   ├── lib/              # Utilities (e.g. cn)
+│   ├── pages/            # Route pages (board, login, register, profile)
+│   ├── store/            # Zustand stores (auth, board, tasks)
+│   ├── types/            # Domain types (auth, board, task)
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── index.css
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
+```
 
+## Getting Started
 
-🚀 Getting Started
-1️⃣ Clone the Repository
+### Clone and install
+
+```bash
 git clone https://github.com/tracyshrestha/kanban-board.git
 cd kanban-board
-
-2️⃣ Install Dependencies
 npm install
-# or
-yarn install
+```
 
-3️⃣ Start Development Server
+### Develop
+
+```bash
 npm run dev
-# or
-yarn dev
+```
 
+App: [http://localhost:5173/](http://localhost:5173/)
 
-The project will start on:
+### Build / preview
 
-http://localhost:5173/
-
-4️⃣ Build for Production
+```bash
 npm run build
-
-5️⃣ Preview Production Build
 npm run preview
+```
 
+```bash
+npm run lint
+```
 
-🧠 Approach & Architecture
+## Architecture
 
-The Kanban board is built with a simple but scalable architecture.
+### Domain model
 
-🔹 State Structure
+- **Column** (`types/board.ts`): `id` (`ColumnId`), title, color. Defaults seed `useBoardStore`.
+- **Task** (`types/task.ts`): `status` is the **column id** the task lives in (not a fixed enum), so custom lists work the same as To Do / In Progress / Done.
+- **User** (`types/auth.ts`): local profile for the demo auth flow.
 
-Tasks and columns are modeled using TypeScript interfaces:
+### Stores (Zustand + persist)
 
-export interface Task {
-  id: string;
-  title: string;
-  description?: string;
-  status: string;
-}
+| Store            | Key              | Owns                                      |
+| ---------------- | ---------------- | ----------------------------------------- |
+| `useAuthStore`   | `auth-storage`   | login/register/profile, `isAuthenticated` |
+| `useBoardStore`  | `board-storage`  | columns, order, collapsed state           |
+| `useTaskStore`   | `kanban-storage` | tasks, text/status filters                |
 
-export interface Column {
-  id: string;
-  title: string;
-  tasks: Task[];
-}
+Deleting a column removes its tasks and clears related filter entries so nothing is left orphaned.
 
-🔹 Drag & Drop
+### Drag & drop
 
-Implemented using @dnd-kit/core and @dnd-kit/sortable
+- Board uses `@dnd-kit` `DndContext` with sortable columns and task cards.
+- Moving a task updates its `status` (column id) and order in the task store.
 
-Smooth animations and CSS transforms
+### Auth
 
-Each column is wrapped in a SortableContext
+Routes `/` and `/profile` use `ProtectedRoute`. Login/register are client-only (passwords are not verified against a server). Use a real backend before treating this as production auth.
 
-Tasks use useSortable for movement and reordering
+## License
 
-🔹 UI/UX Logic
-
-Hover actions for edit/delete buttons
-
-Floating buttons that don’t shift text
-
-Automatic column width layout
-
-Responsive and fast rendering
-
-🔹 Extensibility
-
-This project is built with future scalability in mind. You could add:
-
-User authentication
-
-Backend with Laravel/Node.js
-
-Real-time features (Pusher/WebSocket)
-
-Task filtering, labels & priority
-
-Database persistence
-
-🤝 Contributing
-
-Pull requests are welcome!
-To contribute:
-
-Fork the project
-
-Create a feature branch
-
-Commit your changes
-
-Open a PR
-
-📄 License
-Copyright © 2025 Tracy Shrestha
-All rights reserved.
+Copyright © 2025 Tracy Shrestha. All rights reserved.
